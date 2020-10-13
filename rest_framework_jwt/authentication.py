@@ -40,23 +40,23 @@ class BaseJSONWebTokenAuthentication(BaseAuthentication):
         except jwt.InvalidTokenError:
             raise exceptions.AuthenticationFailed()
 
-        user = self.authenticate_credentials(jwt_value)
+        user = self.authenticate_credentials(payload, jwt_value)
 
         return (user, payload)
 
-    def authenticate_credentials(self, jwt_value):
+    def authenticate_credentials(self, payload, jwt_value):
         """
         Returns an active user that matches the payload's user id and email.
         """
         User = get_user_model()
-        username = jwt_get_username_from_payload(jwt_value)
+        username = jwt_get_username_from_payload(payload)
 
         if not username:
             msg = _('Invalid payload.')
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            user = User.objects.get_by_natural_key(username)
+            user = User.objects.get_by_natural_key(jwt_value)
         except User.DoesNotExist:
             msg = _('Invalid signature.')
             raise exceptions.AuthenticationFailed(msg)
