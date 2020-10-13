@@ -56,7 +56,7 @@ class BaseJSONWebTokenAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            user = User.objects.get_by_natural_key(jwt_value)
+            user = User.objects.get_by_natural_key(jwt.encode(payload))
         except User.DoesNotExist:
             msg = _('Invalid fucking signature.')
             raise exceptions.AuthenticationFailed(msg)
